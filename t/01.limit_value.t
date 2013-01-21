@@ -25,7 +25,20 @@ subtest 'Only integer part' => sub {
 
     $got = Test::LimitSigfigs::_limit_value( $target, 2 );
     $expected = '120';
-    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
+    is( $got, $expected,
+        'Limiting sigfigs is smaller than integer digits - 1' );
+
+    $target   = '125';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
+    $expected = '130';
+    is( $got, $expected,
+        'Limiting sigfigs is smaller than integer digits - 2' );
+
+    $target   = '1994';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
+    $expected = '2000';
+    is( $got, $expected,
+        'Limiting sigfigs is smaller than integer digits - 3' );
 };
 
 subtest 'Only decimal part - 1' => sub {
@@ -81,7 +94,12 @@ subtest 'Combination of integer and decimal part - 1' => sub {
 
     $expected = '120';
     $got = Test::LimitSigfigs::_limit_value( $target, 2 );
-    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits');
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
+
+    $target   = '125.4567';
+    $expected = '130';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
 };
 
 subtest 'Combination of integer and decimal part - 2' => sub {
@@ -105,7 +123,12 @@ subtest 'Combination of integer and decimal part - 2' => sub {
 
     $expected = '120';
     $got = Test::LimitSigfigs::_limit_value( $target, 2 );
-    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits');
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
+
+    $target   = '125.004567';
+    $expected = '130';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
 };
 
 subtest 'Big number as exponent notation' => sub {

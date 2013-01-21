@@ -40,16 +40,6 @@ sub import {
     $self->export_to_level( 1, $self, $_ ) for @EXPORT;
 }
 
-sub _limit_sigfigs_zero {
-    my ($num_of_sigfigs) = @_;
-
-    my $limited_value = '0';
-    if ( $num_of_sigfigs > 1 ) {
-        $limited_value .= '.' . ( '0' x ( $num_of_sigfigs - 1 ) );
-    }
-    return $limited_value;
-}
-
 sub _separate_each_section {
     my ($value) = @_;
 
@@ -67,8 +57,24 @@ sub _separate_each_section {
 
 sub _round_only_integer {
     my ( $integer_part, $integer_digits, $num_of_sigfigs ) = @_;
+
     my $limited_value = substr( $integer_part, 0, $num_of_sigfigs );
+
+    # Round off
+    my $next_digit = substr( $integer_part, $num_of_sigfigs, 1 );
+    $limited_value++ if $next_digit > 4;
+
     $limited_value .= '0' x ( $integer_digits - $num_of_sigfigs );
+    return $limited_value;
+}
+
+sub _limit_sigfigs_zero {
+    my ($num_of_sigfigs) = @_;
+
+    my $limited_value = '0';
+    if ( $num_of_sigfigs > 1 ) {
+        $limited_value .= '.' . ( '0' x ( $num_of_sigfigs - 1 ) );
+    }
     return $limited_value;
 }
 
@@ -81,9 +87,7 @@ sub _limit_value {
     }
 
     # In case of only zero
-    if ( $value == '0' ) {
-        return _limit_sigfigs_zero($num_of_sigfigs);
-    }
+    return _limit_sigfigs_zero($num_of_sigfigs) if $value == '0';
 
     # Separate each section.
     # Like so: {$integer_part}.{$decimal_part}[eE]{$exponent}
