@@ -40,15 +40,25 @@ sub import {
     $self->export_to_level( 1, $self, $_ ) for @EXPORT;
 }
 
+sub _limit_sigfigs_zero {
+    my ($num_of_sigfigs) = @_;
+
+    my $limited_value = '0';
+    if ( $num_of_sigfigs > 1 ) {
+        $limited_value .= '.' . ( '0' x ( $num_of_sigfigs - 1 ) );
+    }
+    return $limited_value;
+}
+
 sub _limit_value {
     my ( $value, $num_of_sigfigs ) = @_;
 
-    if ( $value == '0' ) {
+    if ( $num_of_sigfigs == '0' ) {
         croak 'ERROR';    # FIXME implement error message
     }
 
-    if ( $num_of_sigfigs == '0' ) {
-        croak 'ERROR';    # FIXME implement error message
+    if ( $value == '0' ) {
+        return _limit_sigfigs_zero($num_of_sigfigs);
     }
 
     # for exponent notation

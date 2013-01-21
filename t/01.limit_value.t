@@ -7,7 +7,7 @@ use Test::LimitSigfigs;
 
 BEGIN {
     use Test::Exception;
-    use Test::More tests => 8;
+    use Test::More tests => 9;
 }
 
 my ( $target, $expected, $got );
@@ -146,14 +146,25 @@ subtest 'Small number as exponent notation' => sub {
     is( $got, $expected, 'Limiting sigfigs equals integer digits' );
 };
 
+subtest 'In case of zero' => sub {
+    $target = '0';
+
+    $expected = '0';
+    $got = Test::LimitSigfigs::_limit_value( $target, 1 );
+    is( $got, $expected, 'Limiting sigfigs zero - 1' );
+
+    $expected = '0.0';
+    $got = Test::LimitSigfigs::_limit_value( $target, 2 );
+    is( $got, $expected, 'Limiting sigfigs zero - 2' );
+
+    $expected = '0.0000';
+    $got = Test::LimitSigfigs::_limit_value( $target, 5 );
+    is( $got, $expected, 'Limiting sigfigs zero - 3' );
+};
+
 subtest 'Exceptional' => sub {
-    $target   = '0';
-
-    dies_ok {Test::LimitSigfigs::_limit_value( $target, 1 )}
-    'Target of limiting is zero.';
-
     $target = '1';
-    dies_ok {Test::LimitSigfigs::_limit_value( $target, 0 )}
+    dies_ok { Test::LimitSigfigs::_limit_value( $target, 0 ) }
     'Number of limiting digits is zero.';
 };
 
