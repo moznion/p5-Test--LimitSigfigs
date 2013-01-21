@@ -23,8 +23,9 @@ subtest 'Only integer part' => sub {
     $expected = '123.0';
     is( $got, $expected, 'Limiting sigfigs is bigger than integer digits' );
 
-    dies_ok { Test::LimitSigfigs::_limit_value( $target, 2 ) }
-    'Limiting sigfigs is smaller than integer digits';
+    $got = Test::LimitSigfigs::_limit_value( $target, 2 );
+    $expected = '120';
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
 };
 
 subtest 'Only decimal part - 1' => sub {
@@ -78,8 +79,9 @@ subtest 'Combination of integer and decimal part - 1' => sub {
     $got = Test::LimitSigfigs::_limit_value( $target, 3 );
     is( $got, $expected, 'Limiting sigfigs equals integer digits' );
 
-    dies_ok { Test::LimitSigfigs::_limit_value( $target, 2 ) }
-    'Limiting sigfigs is smaller than integer digits';
+    $expected = '120';
+    $got = Test::LimitSigfigs::_limit_value( $target, 2 );
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits');
 };
 
 subtest 'Combination of integer and decimal part - 2' => sub {
@@ -101,8 +103,9 @@ subtest 'Combination of integer and decimal part - 2' => sub {
     $got = Test::LimitSigfigs::_limit_value( $target, 3 );
     is( $got, $expected, 'Limiting sigfigs equals integer digits' );
 
-    dies_ok { Test::LimitSigfigs::_limit_value( $target, 2 ) }
-    'Limiting sigfigs is smaller than integer digits';
+    $expected = '120';
+    $got = Test::LimitSigfigs::_limit_value( $target, 2 );
+    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits');
 };
 
 subtest 'Big number as exponent notation' => sub {

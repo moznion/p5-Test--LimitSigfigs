@@ -50,43 +50,71 @@ sub _limit_sigfigs_zero {
     return $limited_value;
 }
 
+sub _separate_each_section {
+    my ($value) = @_;
+
+    my ( $num_section, $exponent ) = ( '', '' );
+
+    # For exponent notation
+    ( $num_section, $exponent ) = $value =~ m/(\d*\.?\d*)(e[\+\-]\d*)/;
+    $num_section = $value unless $num_section;
+
+    # Separate integer and decimal part
+    my ( $integer_part, $decimal_part ) = $num_section =~ m/(\d*)\.?(\d*)?/;
+
+    return ( $integer_part, $decimal_part, $exponent );
+}
+
+sub _round_only_integer {
+    my ( $integer_part, $integer_digits, $num_of_sigfigs ) = @_;
+    my $limited_value = substr( $integer_part, 0, $num_of_sigfigs );
+    $limited_value .= '0' x ( $integer_digits - $num_of_sigfigs );
+    return $limited_value;
+}
+
 sub _limit_value {
     my ( $value, $num_of_sigfigs ) = @_;
 
-    if ( $num_of_sigfigs == '0' ) {
-        croak 'ERROR';    # FIXME implement error message
+    if ( $num_of_sigfigs <= 0 ) {
+        croak 'Value of number of sigfigs must be '
+          . 'a number greater than or equal to zero.';
     }
 
+    # In case of only zero
     if ( $value == '0' ) {
         return _limit_sigfigs_zero($num_of_sigfigs);
     }
 
-    # for exponent notation
-    my ( $num_section, $exponent ) = $value =~ m/(\d*\.?\d*)(e[\+\-]\d*)/;
-    $num_section = $value unless $num_section;
+    # Separate each section.
+    # Like so: {$integer_part}.{$decimal_part}[eE]{$exponent}
+    my ( $integer_part, $decimal_part, $exponent ) =
+      _separate_each_section($value);
 
-    # Separate
-    my ( $integer_part, $decimal_part ) = $num_section =~ m/(\d*)\.?(\d*)?/;
-
-    my ( $integer_digits, $valid_decimal_digits, $limited_value ) = ( 0, 0, 0 );
+    my ( $integer_digits, $limited_value ) = ( 0, 0 );
 
     # Integer Part
     if ($integer_part) {
         $integer_digits = length($integer_part);
 
+        # Integer digits greater than limiting sigfigs digits.
         if ( $integer_digits > $num_of_sigfigs ) {
-            croak 'ERROR';    # FIXME implement error message
+            return _round_only_integer( $integer_part, $integer_digits,
+                $num_of_sigfigs );
         }
 
         $limited_value = substr( $integer_part, 0, $num_of_sigfigs );
     }
 
     # Decimal Part
+    my $valid_decimal_digits = 0;
     if ($decimal_part) {
-        my ($zero_part, $valid_decimal_part) = ('', $decimal_part);
+        my ( $zero_part, $valid_decimal_part ) = ( '', $decimal_part );
+
+        # When integer part equals zero.
         unless ($integer_part) {
             ( $zero_part, $valid_decimal_part ) = $decimal_part =~ m/(0*)(\d*)/;
         }
+
         $valid_decimal_digits = length($valid_decimal_part);
 
         my $limited_decmal_part =
@@ -96,15 +124,15 @@ sub _limit_value {
         }
     }
 
+    # Append zero to be suitable for specified sigfigs.
     my $remnant = $num_of_sigfigs - $integer_digits - $valid_decimal_digits;
     if ($remnant) {
         $limited_value .= '.' unless $decimal_part;
         $limited_value .= ( '0' x $remnant );
     }
 
-    if ($exponent) {
-        $limited_value .= $exponent;
-    }
+    # Append exponent section.
+    $limited_value .= $exponent if $exponent;
 
     return $limited_value;
 }
