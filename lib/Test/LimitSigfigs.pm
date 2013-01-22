@@ -62,7 +62,9 @@ sub _round_only_integer {
 
     # Round off
     my $next_digit = substr( $integer_part, $num_of_sigfigs, 1 );
-    $limited_value++ if $next_digit > 4;
+    if ($next_digit) {
+        $limited_value++ if $next_digit > 4;
+    }
 
     $limited_value .= '0' x ( $integer_digits - $num_of_sigfigs );
     return $limited_value;
@@ -121,8 +123,25 @@ sub _limit_value {
 
         $valid_decimal_digits = length($valid_decimal_part);
 
-        my $limited_decmal_part =
-          substr( $valid_decimal_part, 0, $num_of_sigfigs - $integer_digits );
+        my $limited_decmal_part;
+        my $limit_decimal_digits = $num_of_sigfigs - $integer_digits;
+        if ($limit_decimal_digits > 0) {
+            $limited_decmal_part = substr( $valid_decimal_part, 0, $limit_decimal_digits );
+
+            if ( $valid_decimal_digits > $limit_decimal_digits ) {
+                my $next_digit =
+                substr( $valid_decimal_part, $limit_decimal_digits, 1 );
+                if ($next_digit) {
+                    $limited_decmal_part++ if $next_digit > 4;
+                }
+            }
+        } elsif ($limit_decimal_digits == 0) {
+            my $next_digit = substr( $valid_decimal_part, 0, 1 );
+            if ($next_digit) {
+                $limited_value++ if $next_digit > 4;
+            }
+        }
+
         if ($limited_decmal_part) {
             $limited_value .= '.' . $zero_part . $limited_decmal_part;
         }
