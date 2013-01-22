@@ -136,7 +136,12 @@ sub _limit_value {
                     $limited_decmal_part++ if $next_digit > 4;
                     if (length($limited_decmal_part) > $limited_decimal_length) {
                         $limited_decmal_part =~ s/^\d//;
-                        $limited_decmal_part = '0E0' if $limited_decmal_part eq '0';
+                        if (!$integer_digits || $num_of_sigfigs == $integer_digits) {
+                            $limited_decmal_part = 0;
+                        }
+                        elsif ($limited_decmal_part eq '0') {
+                            $limited_decmal_part = '0E0' if $limited_decmal_part eq '0';
+                        }
                         $limited_value++;
                     }
                 }

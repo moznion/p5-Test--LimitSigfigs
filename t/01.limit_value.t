@@ -60,6 +60,11 @@ subtest 'Only decimal part - 1' => sub {
     $expected = '0.1235';
     $got = Test::LimitSigfigs::_limit_value( $target, 4 );
     is( $got, $expected, 'Limiting sigfigs is smaller than decimal digits' );
+
+    $target = '0.99';
+    $got = Test::LimitSigfigs::_limit_value( $target, 1 );
+    $expected = '1';
+    is( $got, $expected );
 };
 
 subtest 'Only decimal part - 2' => sub {
