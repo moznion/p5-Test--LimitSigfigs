@@ -23,22 +23,27 @@ subtest 'Only integer part' => sub {
     $expected = '123.0';
     is( $got, $expected, 'Limiting sigfigs is bigger than integer digits' );
 
+    $got = Test::LimitSigfigs::_limit_value( $target, 1 );
+    $expected = '100';
+    is( $got, $expected,
+        'Limiting sigfigs is smaller than integer digits - 1' );
+
     $got = Test::LimitSigfigs::_limit_value( $target, 2 );
     $expected = '120';
     is( $got, $expected,
-        'Limiting sigfigs is smaller than integer digits - 1' );
+        'Limiting sigfigs is smaller than integer digits - 2' );
 
     $target   = '125';
     $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
     $expected = '130';
     is( $got, $expected,
-        'Limiting sigfigs is smaller than integer digits - 2' );
+        'Limiting sigfigs is smaller than integer digits - 3' );
 
     $target   = '1994';
     $got      = Test::LimitSigfigs::_limit_value( $target, 2 );
     $expected = '2000';
     is( $got, $expected,
-        'Limiting sigfigs is smaller than integer digits - 3' );
+        'Limiting sigfigs is smaller than integer digits - 4' );
 };
 
 subtest 'Only decimal part - 1' => sub {
