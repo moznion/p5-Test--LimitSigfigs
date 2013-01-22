@@ -132,10 +132,17 @@ sub _limit_value {
                 my $next_digit =
                 substr( $valid_decimal_part, $limit_decimal_digits, 1 );
                 if ($next_digit) {
+                    my $limited_decimal_length = length($limited_decmal_part);
                     $limited_decmal_part++ if $next_digit > 4;
+                    if (length($limited_decmal_part) > $limited_decimal_length) {
+                        $limited_decmal_part =~ s/^\d//;
+                        $limited_decmal_part = '0E0' if $limited_decmal_part eq '0';
+                        $limited_value++;
+                    }
                 }
             }
-        } elsif ($limit_decimal_digits == 0) {
+        }
+        elsif ($limit_decimal_digits == 0) {
             my $next_digit = substr( $valid_decimal_part, 0, 1 );
             if ($next_digit) {
                 $limited_value++ if $next_digit > 4;
@@ -143,6 +150,7 @@ sub _limit_value {
         }
 
         if ($limited_decmal_part) {
+            $limited_decmal_part = '0' if $limited_decmal_part eq '0E0';
             $limited_value .= '.' . $zero_part . $limited_decmal_part;
         }
     }

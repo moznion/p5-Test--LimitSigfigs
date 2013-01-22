@@ -109,7 +109,18 @@ subtest 'Combination of integer and decimal part - 1' => sub {
     $target   = '125.5';
     $expected = '126';
     $got      = Test::LimitSigfigs::_limit_value( $target, 3 );
-    is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
+    is( $got, $expected );
+
+    $target   = '125.95';
+    $expected = '126.0';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 4 );
+    is( $got, $expected );
+
+    $target   = '125.995';
+    $expected = '126.00';
+    $got      = Test::LimitSigfigs::_limit_value( $target, 5 );
+    is( $got, $expected );
+
 };
 
 subtest 'Combination of integer and decimal part - 2' => sub {
@@ -141,7 +152,7 @@ subtest 'Combination of integer and decimal part - 2' => sub {
     is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
 
     $expected = '125';
-    $got      = Test::LimitSigfigs::_limit_value( $target, 3 );
+    $got = Test::LimitSigfigs::_limit_value( $target, 3 );
     is( $got, $expected, 'Limiting sigfigs is smaller than integer digits' );
 };
 
